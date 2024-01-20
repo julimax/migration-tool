@@ -51,7 +51,7 @@ jobs:
           BBS_URL: "http://localhost:7990"
           BBS_TOKEN_WINDOWS: ${{ secrets.BBS_TOKEN_WINDOWS }}
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
-          --aws-bucket-name: "migrationtooltestingv1"
+          AWS-BUCKET-NAME: "migrationtooltestingv1"
           AWS_REGION: "us-east-1"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_IDS }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KE }}
@@ -160,7 +160,8 @@ jobs:
             if ($FLAG -eq 0) {
               # MIGRATION TOOL
               #gh bbs2gh migrate-repo --bbs-server-url $env:BBS_URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO
-              & "C:\Program Files\GitHub CLI\gh.exe" bbs2gh migrate-repo --bbs-server-url $env:BBS_URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO
+              #& "C:\Program Files\GitHub CLI\gh.exe" bbs2gh migrate-repo --bbs-server-url $env:BBS_URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO
+              & "C:\Program Files\GitHub CLI\gh.exe" bbs2gh migrate-repo --bbs-server-url BBS-SERVER-URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO --aws-bucket-name AWS-BUCKET-NAME
               echo "debug 10.5"
               # SET CSV OUTPUT VARIABLES FROM THE TARGET FOR NOT includes (GITHUB)
               $MIG_STATUS = "COMPLETED SUCCESSFULLY"
