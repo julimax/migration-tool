@@ -1,7 +1,7 @@
 {
     "include": [
     {
-        "project": "proj1",
+        "project": "PROJ1",
         "migrate": [
             {
                 "repositories": "repo1"
