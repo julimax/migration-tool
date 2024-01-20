@@ -80,6 +80,8 @@ jobs:
           }
           
           # INSTALL TOOLS AND SET REPOSITORIES TO MIGRATE PER PROJECT MATRIX
+          New-Item t.txt
+          gh -- version
           gh extension install github/gh-gei
           gh extension install github/gh-bbs2gh
           echo "debug 1"
