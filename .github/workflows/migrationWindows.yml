@@ -107,26 +107,27 @@ jobs:
           cat .\repos.txt
           for ($i = 1; $i -le $LINE; $i++) {
             echo "debug 4.5"
+            $URL = "${{ matrix.BBS_URL }}"
             $BBS_PROJECT = "${{ matrix.project }}"
             $BBS_REPO = Get-Content repos.txt | Select-Object -Index $i
             $GH_REPO = "${{ matrix.project }}---$BBS_REPO"
             $GH_ORG = "org-set-test"
             echo "debug 5"
-            $BBS_NUM_OP_PR = (Invoke-RestMethod -Uri "http://127.0.0.1:7990/projects/$BBS_PROJECT/repos/repo1/pull-requests" -Headers @{
+            $BBS_NUM_OP_PR = (Invoke-RestMethod -Uri "$URL/projects/$BBS_PROJECT/repos/$BBS_REPO/pull-requests" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
             }).size
             echo "debug 6"
-            $BBS_NUM_BRANCHES = (Invoke-RestMethod -Uri "http://127.0.0.1:7990/projects/PROJ/repos/repo1/branches" -Headers @{
+            $BBS_NUM_BRANCHES = (Invoke-RestMethod -Uri "$URL/projects/$BBS_PROJECT/repos/$BBS_REPO/branches" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
             }).size
             echo "debug 7"
-            $BBS_NUM_FILES = (Invoke-RestMethod -Uri "http://127.0.0.1:7990/projects/PROJ/repos/repo1/files?limit=100000" -Headers @{
+            $BBS_NUM_FILES = (Invoke-RestMethod -Uri "$URL/projects/$BBS_PROJECT/repos/$BBS_REPO/files?limit=100000" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
             }).size
-            $SIZE = (Invoke-RestMethod -Uri "http://127.0.0.1:7990/projects/PROJ/repos/repo1/sizes" -Headers @{
+            $SIZE = (Invoke-RestMethod -Uri "$URL/projects/$BBS_PROJECT/repos/$BBS_REPO/sizes" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer $($env:BBS_TOKEN_WINDOWS)"
             }).repository
