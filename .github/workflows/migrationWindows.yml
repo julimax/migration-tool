@@ -122,11 +122,11 @@ jobs:
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
             }).size
             echo "debug 7"
-            $BBS_NUM_FILES = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/projects/${{ matrix.project }}/repos/$BBS_REPO/files?limit=100000" -Headers @{
+            $BBS_NUM_FILES = (Invoke-RestMethod -Uri "http://127.0.0.1:7990/projects/PROJ/repos/repo1/files?limit=100000" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
             }).size
-            $SIZE = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/projects/$BBS_PROJECT/repos/$BBS_REPO/sizes" -Headers @{
+            $SIZE = (Invoke-RestMethod -Uri "http://127.0.0.1:7990/projects/PROJ/repos/repo1/sizes" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer $($env:BBS_TOKEN_WINDOWS)"
             }).repository
