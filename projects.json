@@ -1,0 +1,13 @@
+{
+    "include": [
+    {
+        "project": "PROJECTO1",
+        "migrate": [
+            {
+                "repositories": "repo1"
+            }
+        ],
+        "size": 1
+    }
+    ]
+}
