@@ -95,7 +95,7 @@ jobs:
           echo "$url"
           $response = Invoke-RestMethod -Uri $url -Method GET -Headers $headers
           echo "$response"
-          echo "debug 2"          
+          echo "debug 3"          
           $response.values | ForEach-Object { $_.name } | Out-File -FilePath repos.txt -Encoding utf8
           $repos | Out-File -FilePath repos.txt -Encoding UTF8
           $LINE = Get-Content repos.txt | Measure-Object | Select-Object -ExpandProperty Count
@@ -122,7 +122,7 @@ jobs:
               "Accept" = "application/json"
               "Authorization" = "Bearer $($env:BBS_TOKEN_WINDOWS)"
             }).repository
-    
+            echo "debug 5"
             $MIGSTART = (Get-Date).AddHours(3).ToString("yyyy-MM-dd HH:mm:ss")
     
             # VERIFY IF THE REPOSITORY IS includes
