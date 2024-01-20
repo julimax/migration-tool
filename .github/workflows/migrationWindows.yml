@@ -109,7 +109,7 @@ jobs:
             echo "debug 4.5"
             $URL = "${{ env.BBS_URL }}"
             $BBS_PROJECT = "${{ matrix.project }}"
-            $BBS_REPO = $response.values[$i].name
+            $BBS_REPO = $response.values[$i - 1].name
             $GH_REPO = "${{ matrix.project }}---$BBS_REPO"
             $GH_ORG = "org-set-test"
             echo "debug 5"
