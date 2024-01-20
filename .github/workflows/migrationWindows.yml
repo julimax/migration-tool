@@ -117,7 +117,7 @@ jobs:
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
             }).size
             echo "debug 6"
-            $BBS_NUM_BRANCHES = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/projects/$BBS_PROJECT/repos/$BBS_REPO/branches" -Headers @{
+            $BBS_NUM_BRANCHES = (Invoke-RestMethod -Uri "http://127.0.0.1:7990/projects/PROJ/repos/repo1/branches" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
             }).size
