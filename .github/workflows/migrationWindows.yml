@@ -45,8 +45,8 @@ jobs:
       - name: Migration
         env:
           GH_PAT: ${{ secrets.GH_PAT_MARCO }}
-          BBS_USERNAME: "Admin"
-          BBS_PASSWORD: "Admin94"
+          BBS_USERNAME: "admin"
+          BBS_PASSWORD: "admin123"
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           BBS_URL: "http://localhost:7990"
           BBS_TOKEN_WINDOWS: ${{ secrets.BBS_TOKEN_WINDOWS }}
