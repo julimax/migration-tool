@@ -156,6 +156,7 @@ jobs:
               # MIGRATION TOOL
               #gh bbs2gh migrate-repo --bbs-server-url $env:BBS_URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO
               & "C:\Program Files\GitHub CLI\gh.exe" bbs2gh migrate-repo --bbs-server-url $env:BBS_URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO
+              echo "debug 10.5"
               # SET CSV OUTPUT VARIABLES FROM THE TARGET FOR NOT includes (GITHUB)
               $MIG_STATUS = "COMPLETED SUCCESSFULLY"
               $GH_NUM_OP_PR = (Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_ORG/$GH_REPO/pulls" -Headers @{
