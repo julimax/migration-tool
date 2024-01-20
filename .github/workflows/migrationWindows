@@ -1,0 +1,214 @@
+name: BitBucket Server Migration Tool Windows
+on:
+  workflow_dispatch:
+  
+jobs:
+#  CSV-Generator:
+#    runs-on: [ 'self-hosted' , 'macOS' , 'X64' ]
+#    steps:
+#      - name: Creacion de CSV
+#        run: |
+#          # GENERATE CSV OUTPUTS
+#          echo mig_start_time,mig_end_time,migration_time\(secs\),repository_size\(bytes\),bbs_project,bbs_repo,gh_org,gh_repo,bbs_num_files,gh_num_files,bbs_num_prs,gh_num_prs,bbs_num_branches,gh_num_branches,status > CSV_PROJECTS_ANALYSIS.csv
+  
+  Get-Repositories-to-Migrate:
+    runs-on: ubuntu-latest
+
+    # CONFIGURE PROJECT MATRIX
+    outputs:
+      # SET PROJECTS OUTPUT FROM SET-MATRIX STEP
+      PROJECTS: ${{ steps.set-matrix.outputs.PROJECTS }}
+    
+    steps:
+      - name: Checkout to repository
+        uses: actions/checkout@v3
+     
+      - name: Set matrix data
+        id: set-matrix
+        # STORE PROJECTS.JSON INTO PROJECTS VARIABLE
+        run: echo "PROJECTS=$(jq -c . < ./projects.json)" >> $GITHUB_OUTPUT
+        
+  Migration:
+    runs-on: [ 'self-hosted' , 'Windows' , 'X64' ]
+    needs: Get-Repositories-to-Migrate
+    strategy:
+      max-parallel: 1
+      # SET MATRIX WITH PROJECTS TO MIGRATE
+      matrix: ${{ fromJson(needs.Get-Repositories-to-Migrate.outputs.PROJECTS) }}
+      
+    steps:
+      - name: Creacion de CSV
+        run: |
+          # GENERATE CSV OUTPUTS
+          "mig_start_time,mig_end_time,migration_time(secs),repository_size(bytes),bbs_project,bbs_repo,gh_org,gh_repo,bbs_num_files,gh_num_files,bbs_num_prs,gh_num_prs,bbs_num_branches,gh_num_branches,status" | Out-File -FilePath 'CSV_PROJECTS_ANALYSIS.csv' -Encoding utf8
+          
+      - name: Migration
+        env:
+          GH_PAT: ${{ secrets.GH_PAT_MARCO }}
+          BBS_USERNAME: "Admin"
+          BBS_PASSWORD: "Admin94"
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          BBS_URL: "http://localhost:7990"
+          BBS_TOKEN_WINDOWS: ${{ secrets.BBS_TOKEN_WINDOWS }}
+          SUDO_PASS: ${{ secrets.SUDO_PASS }}
+        
+        run: |
+          # REPOSITORIES TO INCLUDE
+          $needsOutput = '${{ needs.Get-Repositories-to-Migrate.outputs.PROJECTS }}'
+          $includesRepositories = (ConvertFrom-Json $needsOutput).include.migrate.repositories
+          $includesRepositories | Out-File -FilePath includes.txt -Encoding utf8
+          $INCLUDES = (Get-Content -Path "includes.txt" | Measure-Object -Line).Lines
+    
+          $needsOutput = '${{ needs.Get-Repositories-to-Migrate.outputs.PROJECTS }}'
+          $projectSizes = (ConvertFrom-Json $needsOutput).include.size
+          $projectSizes | Out-File -FilePath projectSizes.txt -Encoding utf8
+          
+          $needsOutput = '${{ needs.Get-Repositories-to-Migrate.outputs.PROJECTS }}'
+          $projects = (ConvertFrom-Json $needsOutput).include.project
+          $projects | Out-File -FilePath projects.txt -Encoding utf8      
+          
+          $projectLines = (ConvertFrom-Json $needsOutput).include.project.Count
+          
+          foreach ($x in 0..$projectLines.Count) {
+            $REPOS_IN_PROJECT = Get-Content projectSizes.txt | Select-Object -Index 0
+            $PROJECT = Get-Content projects.txt | Select-Object -Index $x
+            if ($REPOS_IN_PROJECT -ne 0) {
+              foreach ($u in 0..($REPOS_IN_PROJECT.Count)) {
+                $PROJECT | Out-File -Append -FilePath projectsfile.txt
+              }
+            }
+          }
+          
+          # INSTALL TOOLS AND SET REPOSITORIES TO MIGRATE PER PROJECT MATRIX
+          gh extension install github/gh-gei
+          gh extension install github/gh-bbs2gh
+          echo "debug 1"
+          echo "${{ env.BBS_URL }}/rest/api/latest/projects/${{ matrix.project }}/repos/"
+          $headers = @{
+              'Accept'        = 'application/json'
+              'Authorization' = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
+          }
+          echo "debug 2"
+          $url = "${{ env.BBS_URL }}/rest/api/latest/projects/${{ matrix.project }}/repos/"
+          echo "$url"
+          $response = Invoke-RestMethod -Uri $url -Method GET -Headers $headers
+          echo "$response"
+          echo "debug 2"          
+          $response.values | ForEach-Object { $_.name } | Out-File -FilePath repos.txt -Encoding utf8
+          $repos | Out-File -FilePath repos.txt -Encoding UTF8
+          $LINE = Get-Content repos.txt | Measure-Object | Select-Object -ExpandProperty Count
+          echo "debug 4"
+          # MIGRATION PROCESS PER REPOSITORY (PROJECT MATRIX)
+          for ($i = 1; $i -le $LINE; $i++) {
+            $BBS_PROJECT = ${{ matrix.project }}
+            $BBS_REPO = Get-Content repos.txt | Select-Object -Index $i
+            $GH_REPO = "${{ matrix.project }}---$BBS_REPO"
+            $GH_ORG = "CleverSandbox"
+            $BBS_NUM_OP_PR = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/rest/api/latest/projects/$BBS_PROJECT/repos/$BBS_REPO/pull-requests" -Headers @{
+              "Accept" = "application/json"
+              "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
+            }).size
+            $BBS_NUM_BRANCHES = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/rest/api/latest/projects/$BBS_PROJECT/repos/$BBS_REPO/branches" -Headers @{
+              "Accept" = "application/json"
+              "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
+            }).size
+            $BBS_NUM_FILES = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/rest/api/latest/projects/$BBS_PROJECT/repos/$BBS_REPO/files?limit=100000" -Headers @{
+              "Accept" = "application/json"
+              "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
+            }).size
+            $SIZE = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/projects/$BBS_PROJECT/repos/$BBS_REPO/sizes" -Headers @{
+              "Accept" = "application/json"
+              "Authorization" = "Bearer $($env:BBS_TOKEN_WINDOWS)"
+            }).repository
+    
+            $MIGSTART = (Get-Date).AddHours(3).ToString("yyyy-MM-dd HH:mm:ss")
+    
+            # VERIFY IF THE REPOSITORY IS includes
+            $FLAG = 0
+            for ($u = 1; $u -le $INCLUDES; $u++) {
+              $CONDITIONAL = Get-Content INCLUDEs.txt | Select-Object -Index $u
+              $PROJECTEXC = Get-Content projectsfile.txt | Select-Object -Index $u
+    
+              if ($CONDITIONAL -eq $BBS_REPO -and $PROJECTEXC -eq $BBS_PROJECT) {
+                $FLAG = 1
+              }
+            }
+    
+            # IF THE REPOSITORY IS NOT includes DO THE REPOSITORY MIGRATION
+            if ($FLAG -eq 0) {
+              # MIGRATION TOOL
+              gh bbs2gh migrate-repo --bbs-server-url $env:BBS_URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO
+              # SET CSV OUTPUT VARIABLES FROM THE TARGET FOR NOT includes (GITHUB)
+              $MIG_STATUS = "COMPLETED SUCCESSFULLY"
+              $GH_NUM_OP_PR = (Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_ORG/$GH_REPO/pulls" -Headers @{
+                "Accept" = "application/vnd.github+json"
+                "Authorization" = "Bearer $($env:GH_PAT)"
+                "X-GitHub-Api-Version" = "2022-11-28"
+              }).Count
+              $GH_NUM_BRANCHES = (Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_ORG/$GH_REPO/branches" -Headers @{
+                "Accept" = "application/vnd.github+json"
+                "Authorization" = "Bearer $($env:GH_PAT)"
+                "X-GitHub-Api-Version" = "2022-11-28"
+              }).name.Count
+              $DEFAULT_BRANCH = (Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_ORG/$GH_REPO" -Headers @{
+                "Accept" = "application/vnd.github+json"
+                "Authorization" = "Bearer $($env:GH_PAT)"
+                "X-GitHub-Api-Version" = "2022-11-28"
+              }).default_branch
+              $FILES = (Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_ORG/$GH_REPO/git/trees/$DEFAULT_BRANCH?recursive=true" -Headers @{
+                "Accept" = "application/vnd.github+json"
+                "Authorization" = "Bearer $($env:GH_PAT)"
+                "X-GitHub-Api-Version" = "2022-11-28"
+              }).tree.type.Count
+              $GH_NUM_FILES = $FILES
+              $MIGFINISH = (Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_ORG/$GH_REPO/issues" -Headers @{
+                "Accept" = "application/vnd.github+json"
+                "Authorization" = "Bearer $($env:GH_PAT)"
+                "X-GitHub-Api-Version" = "2022-11-28"
+              })[0].created_at -replace 'T', ' ' -replace 'Z', ''
+    
+              $MIGRATION_TIME = (New-TimeSpan -Start $MIGSTART -End $MIGFINISH).ToString()
+    
+            # IF THE REPOSITORY IS includes AVOID THE REPOSITORY MIGRATION
+            } elseif ($FLAG -eq 1) {
+              # SET CSV OUTPUT VARIABLES FROM THE TARGET FOR includes (GITHUB)
+              $GH_NUM_OP_PR = "N/A"
+              $GH_NUM_BRANCHES = "N/A"
+              $GH_NUM_FILES = "N/A"
+              $MIGFINISH = "N/A"
+              $MIG_STATUS = "includes"
+              $MIGRATION_TIME = "N/A"
+              # SET includes REPOSITORY FLAG TO 0
+              $FLAG = 0
+            }
+    
+            # PRINT MIGRATION VARIABLES TO THE OUTPUT CSV FILE
+            "$MIGSTART,$MIGFINISH,$MIGRATION_TIME,$SIZE B,$BBS_PROJECT,$BBS_REPO,$GH_ORG,$GH_REPO,$BBS_NUM_FILES,$GH_NUM_FILES,$BBS_NUM_OP_PR,$GH_NUM_OP_PR,$BBS_NUM_BRANCHES,$GH_NUM_BRANCHES,$MIG_STATUS" | Out-File -FilePath CSV_PROJECTS_ANALYSIS.csv -Append -Encoding UTF8
+          }
+    
+          # DELETE UNUSED DATA SO THE MATRIX WORKS PROPERLY
+          Remove-Item -Path repos.txt, size.txt, projectsfile.txt, projectSizes.txt, INCLUDEs.txt, projects.txt -Force
+    
+          # WORKFLOW RUN CURRENT TIME
+          $env:ARTIFACT_NAME = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss").Replace(':', '.')
+          "ARTIFACT_NAME=$env:ARTIFACT_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding UTF8
+    
+    #  - name: Upload .CSV
+    #    uses: actions/upload-artifact@v4
+    #    with:
+    #      name: ${{ matrix.project }}-${{ env.ARTIFACT_NAME }} RUN-${{ github.run_number }}-SUCCESS
+    #      path: ./*
+    #          
+    #  - name: Clean generated files
+    #    run: echo ${{ secrets.SUDO_PASS }} | sudo -S rm -f -r *
+    #        
+    #  - name: Upload .LOG files on failure
+    #    if: ${{ failure() }}
+    #    uses: actions/upload-artifact@v4
+    #    with:
+    #      name: ${{ matrix.project }}-${{ env.ARTIFACT_NAME }} RUN-${{ github.run_number }}-FAILURE
+    #      path: ./*.log
+    #          
+      - name: Clean generated files on failure
+        if: ${{ failure() }}
+        run: rm -r *
