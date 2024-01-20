@@ -85,23 +85,18 @@ jobs:
           #gh extension install github/gh-gei
           #gh extension install github/gh-bbs2gh
           echo "debug 1"
+          echo "${{ env.BBS_URL }}/rest/api/latest/projects/${{ matrix.project }}/repos/"
           $headers = @{
               'Accept'        = 'application/json'
-              'Authorization' = "Bearer BBDC-MTE2NjQ2MzcyNTM4OnhqGVN6m1IFxUh7NXAmNmGllmP+"
+              'Authorization' = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
           }
           echo "debug 2"
-
-          $response = Invoke-RestMethod -Uri $url -Method GET -Headers $headers
-          
-          echo $response
-          $response.values | ForEach-Object { $_.name } | Out-File -FilePath repos.txt -Encoding utf8
-          cat .\repos.txt
-          echo "debug 2"
-          $url = "http://localhost:7990/rest/api/latest/projects/PROJ/repos/"
+          $url = "${{ env.BBS_URL }}/rest/api/latest/projects/${{ matrix.project }}/repos/"
+          echo "$url"
           $response = Invoke-RestMethod -Uri $url -Method GET -Headers $headers
           echo "$response"
           echo "debug 3"          
-          $response.values | ForEach-Object { $_.name } | Out-File -FilePath repos.txt -Encoding utf8
+          $response.values | ForEach-Object { $_.name } | Out-File -FilePath repos.txt -Encoding utf
           cat .\repos.txt
           echo $response 
           $repos | Out-File -FilePath repos.txt -Encoding UTF8
