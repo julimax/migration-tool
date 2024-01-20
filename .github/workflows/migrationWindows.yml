@@ -191,7 +191,7 @@ jobs:
             # PRINT MIGRATION VARIABLES TO THE OUTPUT CSV FILE
             "$MIGSTART,$MIGFINISH,$MIGRATION_TIME,$SIZE B,$BBS_PROJECT,$BBS_REPO,$GH_ORG,$GH_REPO,$BBS_NUM_FILES,$GH_NUM_FILES,$BBS_NUM_OP_PR,$GH_NUM_OP_PR,$BBS_NUM_BRANCHES,$GH_NUM_BRANCHES,$MIG_STATUS" | Out-File -FilePath CSV_PROJECTS_ANALYSIS.csv -Append -Encoding UTF8
           }
-    
+          echo "debug 9"
           # DELETE UNUSED DATA SO THE MATRIX WORKS PROPERLY
           Remove-Item -Path repos.txt, size.txt, projectsfile.txt, projectSizes.txt, INCLUDEs.txt, projects.txt -Force
     
