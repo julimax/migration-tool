@@ -96,7 +96,7 @@ jobs:
           $response = Invoke-RestMethod -Uri $url -Method GET -Headers $headers
           echo "$response"
           echo "debug 3"          
-          $response.values | ForEach-Object { $_.name } | Out-File -FilePath repos.txt -Encoding utf
+          $response.values | ForEach-Object { $_.name } | Out-File -FilePath repos.txt -Encoding utf8
           cat .\repos.txt
           echo $response 
           $repos | Out-File -FilePath repos.txt -Encoding UTF8
