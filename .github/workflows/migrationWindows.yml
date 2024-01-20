@@ -113,6 +113,9 @@ jobs:
             $GH_REPO = "${{ matrix.project }}---$BBS_REPO"
             $GH_ORG = "org-set-test"
             echo "debug 5"
+            echo "$URL"
+            echo "$BBS_PROJECT"
+            echo "$BBS_REPO"
             $BBS_NUM_OP_PR = (Invoke-RestMethod -Uri "$URL/projects/$BBS_PROJECT/repos/$BBS_REPO/pull-requests" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
