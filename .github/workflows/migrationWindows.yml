@@ -44,7 +44,7 @@ jobs:
           
       - name: Migration
         env:
-          GH_PAT: ${{ secrets.GH_PAT_MARCO }}
+          GH_PAT: ${{ secrets.GH_PAT_JULI }}
           BBS_USERNAME: "admin"
           BBS_PASSWORD: "admin123"
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
