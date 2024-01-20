@@ -107,7 +107,7 @@ jobs:
           cat .\repos.txt
           for ($i = 1; $i -le $LINE; $i++) {
             echo "debug 4.5"
-            $URL = "${{ matrix.BBS_URL }}"
+            $URL = "${{ env.BBS_URL }}"
             $BBS_PROJECT = "${{ matrix.project }}"
             $BBS_REPO = Get-Content repos.txt | Select-Object -Index $i
             $GH_REPO = "${{ matrix.project }}---$BBS_REPO"
