@@ -102,6 +102,7 @@ jobs:
           echo "debug 4"
           # MIGRATION PROCESS PER REPOSITORY (PROJECT MATRIX)
           for ($i = 1; $i -le $LINE; $i++) {
+            echo "debug 4.5
             $BBS_PROJECT = ${{ matrix.project }}
             $BBS_REPO = Get-Content repos.txt | Select-Object -Index $i
             $GH_REPO = "${{ matrix.project }}---$BBS_REPO"
