@@ -47,10 +47,15 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT_JULI }}
           BBS_USERNAME: "admin"
           BBS_PASSWORD: "admin123"
-          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          #AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           BBS_URL: "http://localhost:7990"
           BBS_TOKEN_WINDOWS: ${{ secrets.BBS_TOKEN_WINDOWS }}
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
+          --aws-bucket-name: "migrationtooltestingv1"
+          AWS_REGION: "us-east-1"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_IDS }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KE }}
+          
         
         run: |
           # REPOSITORIES TO INCLUDE
