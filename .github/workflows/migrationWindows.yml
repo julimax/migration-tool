@@ -139,7 +139,7 @@ jobs:
             }).repository
             echo "debug 8"
             $MIGSTART = (Get-Date).AddHours(3).ToString("yyyy-MM-dd HH:mm:ss")
-    
+            echo "debug 9"
             # VERIFY IF THE REPOSITORY IS includes
             $FLAG = 0
             for ($u = 1; $u -le $INCLUDES; $u++) {
@@ -150,7 +150,7 @@ jobs:
                 $FLAG = 1
               }
             }
-    
+            echo "debug 10"
             # IF THE REPOSITORY IS NOT includes DO THE REPOSITORY MIGRATION
             if ($FLAG -eq 0) {
               # MIGRATION TOOL
@@ -163,6 +163,7 @@ jobs:
                 "Authorization" = "Bearer $($env:GH_PAT)"
                 "X-GitHub-Api-Version" = "2022-11-28"
               }).Count
+              echo "debug 11"
               $GH_NUM_BRANCHES = (Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_ORG/$GH_REPO/branches" -Headers @{
                 "Accept" = "application/vnd.github+json"
                 "Authorization" = "Bearer $($env:GH_PAT)"
@@ -173,6 +174,7 @@ jobs:
                 "Authorization" = "Bearer $($env:GH_PAT)"
                 "X-GitHub-Api-Version" = "2022-11-28"
               }).default_branch
+              echo "debug 12"
               $FILES = (Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_ORG/$GH_REPO/git/trees/$DEFAULT_BRANCH?recursive=true" -Headers @{
                 "Accept" = "application/vnd.github+json"
                 "Authorization" = "Bearer $($env:GH_PAT)"
@@ -184,7 +186,7 @@ jobs:
                 "Authorization" = "Bearer $($env:GH_PAT)"
                 "X-GitHub-Api-Version" = "2022-11-28"
               })[0].created_at -replace 'T', ' ' -replace 'Z', ''
-    
+              echo "debug 13"
               $MIGRATION_TIME = (New-TimeSpan -Start $MIGSTART -End $MIGFINISH).ToString()
     
             # IF THE REPOSITORY IS includes AVOID THE REPOSITORY MIGRATION
@@ -199,18 +201,18 @@ jobs:
               # SET includes REPOSITORY FLAG TO 0
               $FLAG = 0
             }
-    
+            echo "debug 14"
             # PRINT MIGRATION VARIABLES TO THE OUTPUT CSV FILE
             "$MIGSTART,$MIGFINISH,$MIGRATION_TIME,$SIZE B,$BBS_PROJECT,$BBS_REPO,$GH_ORG,$GH_REPO,$BBS_NUM_FILES,$GH_NUM_FILES,$BBS_NUM_OP_PR,$GH_NUM_OP_PR,$BBS_NUM_BRANCHES,$GH_NUM_BRANCHES,$MIG_STATUS" | Out-File -FilePath CSV_PROJECTS_ANALYSIS.csv -Append -Encoding UTF8
           }
-          echo "debug 9"
+          echo "debug 15"
           # DELETE UNUSED DATA SO THE MATRIX WORKS PROPERLY
           Remove-Item -Path repos.txt, size.txt, projectsfile.txt, projectSizes.txt, INCLUDEs.txt, projects.txt -Force
-    
+          
           # WORKFLOW RUN CURRENT TIME
           $env:ARTIFACT_NAME = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss").Replace(':', '.')
           "ARTIFACT_NAME=$env:ARTIFACT_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding UTF8
-    
+          echo "debug 16"  
     #  - name: Upload .CSV
     #    uses: actions/upload-artifact@v4
     #    with:
