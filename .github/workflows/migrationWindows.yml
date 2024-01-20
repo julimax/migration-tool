@@ -105,15 +105,18 @@ jobs:
             $BBS_PROJECT = ${{ matrix.project }}
             $BBS_REPO = Get-Content repos.txt | Select-Object -Index $i
             $GH_REPO = "${{ matrix.project }}---$BBS_REPO"
-            $GH_ORG = "CleverSandbox"
+            $GH_ORG = "org-test"
+            echo "debug 5"
             $BBS_NUM_OP_PR = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/rest/api/latest/projects/$BBS_PROJECT/repos/$BBS_REPO/pull-requests" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
             }).size
+            echo "debug 6"
             $BBS_NUM_BRANCHES = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/rest/api/latest/projects/$BBS_PROJECT/repos/$BBS_REPO/branches" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
             }).size
+            echo "debug 7"
             $BBS_NUM_FILES = (Invoke-RestMethod -Uri "${{ env.BBS_URL }}/rest/api/latest/projects/$BBS_PROJECT/repos/$BBS_REPO/files?limit=100000" -Headers @{
               "Accept" = "application/json"
               "Authorization" = "Bearer ${{ env.BBS_TOKEN_WINDOWS }}"
@@ -122,7 +125,7 @@ jobs:
               "Accept" = "application/json"
               "Authorization" = "Bearer $($env:BBS_TOKEN_WINDOWS)"
             }).repository
-            echo "debug 5"
+            echo "debug 8"
             $MIGSTART = (Get-Date).AddHours(3).ToString("yyyy-MM-dd HH:mm:ss")
     
             # VERIFY IF THE REPOSITORY IS includes
