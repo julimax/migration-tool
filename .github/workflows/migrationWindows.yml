@@ -137,7 +137,7 @@ jobs:
                 $FLAG = 1
               }
             }
-            echo "debug 10 $URL $BBS_PROJECT $BBS_REPO $GH_ORG $GH_REPO"
+            echo "debug url: $URL proj: $BBS_PROJECT repo: $BBS_REPO org: $GH_ORG ghrepo: $GH_REPO"
             # IF THE REPOSITORY IS NOT includes DO THE REPOSITORY MIGRATION
             if ($FLAG -eq 0) {
               # MIGRATION TOOL
