@@ -142,7 +142,6 @@ jobs:
             if ($FLAG -eq 0) {
               # MIGRATION TOOL
               #gh bbs2gh migrate-repo --bbs-server-url $env:BBS_URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO
-              #& "C:\Program Files\GitHub CLI\gh.exe" bbs2gh migrate-repo --bbs-server-url $env:BBS_URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO
               & "C:\Program Files\GitHub CLI\gh.exe" bbs2gh migrate-repo --bbs-server-url $URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO --aws-bucket-name ${{ env.AWS-BUCKET-NAME }}
               # SET CSV OUTPUT VARIABLES FROM THE TARGET FOR NOT includes (GITHUB)
               $MIG_STATUS = "COMPLETED SUCCESSFULLY"
