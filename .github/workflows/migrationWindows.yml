@@ -89,8 +89,8 @@ jobs:
           #gh extension install github/gh-gei
           #gh extension install github/gh-bbs2gh
           & "C:\Program Files\GitHub CLI\gh.exe" version
-          & "C:\Program Files\GitHub CLI\gh.exe" extension install github/gh-gei
-          & "C:\Program Files\GitHub CLI\gh.exe" extension install github/gh-bbs2gh
+          #& "C:\Program Files\GitHub CLI\gh.exe" extension install github/gh-gei
+          #& "C:\Program Files\GitHub CLI\gh.exe" extension install github/gh-bbs2gh
           echo "${{ env.BBS_URL }}/rest/api/latest/projects/${{ matrix.project }}/repos/"
           $headers = @{
               'Accept'        = 'application/json'
