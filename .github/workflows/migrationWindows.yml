@@ -144,7 +144,7 @@ jobs:
               #gh bbs2gh migrate-repo --bbs-server-url $env:BBS_URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO
               #& "C:\Program Files\GitHub CLI\gh.exe" bbs2gh migrate-repo --bbs-server-url $URL --bbs-project $BBS_PROJECT --bbs-repo $BBS_REPO --github-org $GH_ORG --github-repo $GH_REPO --aws-bucket-name ${{ env.AWS-BUCKET-NAME }} --bbs-shared-home /export/
               echo "debug 2"
-              docker exec -it 7 sh -c 'export BBS_USERNAME="admin"export GH_PAT=${{ secrets.GH_PAT_JULI }} export BBS_USERNAME="admin" export BBS_PASSWORD="admin123" export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} export AWS_REGION="us-east-1" && gh bbs2gh migrate-repo --bbs-server-url http://localhost:7990 --bbs-project PROJ --bbs-repo repo1 --github-org org-set-test --github-repo repo1 --aws-bucket-name migrationtooltestingv1'
+              docker exec 7 sh -c 'export BBS_USERNAME="admin"export GH_PAT=${{ secrets.GH_PAT_JULI }} export BBS_USERNAME="admin" export BBS_PASSWORD="admin123" export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} export AWS_REGION="us-east-1" && gh bbs2gh migrate-repo --bbs-server-url http://localhost:7990 --bbs-project PROJ --bbs-repo repo1 --github-org org-set-test --github-repo repo1 --aws-bucket-name migrationtooltestingv1'
               $MIG_STATUS = "COMPLETED SUCCESSFULLY"
               $GH_NUM_OP_PR = (Invoke-RestMethod -Uri "https://api.github.com/repos/$GH_ORG/$GH_REPO/pulls" -Headers @{
                 "Accept" = "application/vnd.github+json"
