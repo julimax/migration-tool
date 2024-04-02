@@ -14,11 +14,22 @@ Este trabajo se ejecuta en un runner autohospedado de Windows X64. Depende del t
 
 La migración se realiza un proyecto a la vez (max-parallel: 1). La matriz para este trabajo se establece con los proyectos a migrar.
 
-Las variables de entorno para este trabajo incluyen el Token de Acceso Personal de GitHub (GH_PAT), el nombre de usuario y la contraseña del Servidor BitBucket (BBS), la cadena de conexión de almacenamiento de Azure y la ruta de trabajo del runner (PATH_WORK).
 
 El trabajo lee el archivo projects.json y realiza la migración para cada repositorio en el proyecto objetivo. La migración se realiza utilizando el comando gh bbs2gh migrate-repo.
 
 Después de la migración, el archivo de exportación de Bitbucket se recupera en el directorio de trabajo. Finalmente, el repositorio se migra a GitHub utilizando el comando gh bbs2gh migrate-repo.
+
+## secretos necesarias para ejecutar el action
+
+- GH_PAT: Este es un token de acceso personal de GitHub que se utiliza para autenticarse con GitHub. Debe ser almacenado como un secreto en la configuración de tu repositorio de GitHub.
+
+- BBS_USERNAME y BBS_PASSWORD: Estos son el nombre de usuario y la contraseña para BitBucket Server. Estos también deben ser almacenados como secretos en la configuración de tu repositorio de GitHub.
+
+- AZURE_STORAGE_CONNECTION_STRING: Esta es la cadena de conexión para tu cuenta de almacenamiento de Azure. Se utiliza para almacenar y recuperar los archivos de migración. Este también debe ser almacenado como un secreto en la configuración de tu repositorio de GitHub.
+
+## Variables necesarias para ejecutar el action
+
+- PATH_WORK: Esta es una variable que define el directorio de trabajo donde se esta ejecutando el runner y se almacenarán los archivos de migración.
 
 ## Agregar projectos y repositorios al json
 
