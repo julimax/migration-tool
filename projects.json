@@ -1,13 +1,22 @@
 {
     "include": [
     {
-        "project": "PROJ",
+        "project": "PROJ1",
         "migrate": [
             {
-                "repositories": "repo1"
+                "repositories": "repo1",
+                "repositories": "repo2"
             }
-        ],
-        "size": 1
+        ]
+    },
+    {
+        "project": "PROJ2",
+        "migrate": [
+            {
+                "repositories": "repo1.1",
+                "repositories": "repo2.1"
+            }
+        ]
     }
     ]
 }
