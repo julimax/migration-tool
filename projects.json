@@ -4,7 +4,8 @@
         "project": "PROJ",
         "migrate": [
             {
-                "repositories": "repo1"
+                "repositories": "repo1",
+                "repositories": "repo2"
             }
         ],
         "size": 1
